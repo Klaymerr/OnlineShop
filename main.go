@@ -50,7 +50,7 @@ func initDB() {
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 		getEnv("DB_HOST", "localhost"),
 		getEnv("DB_USER", "postgres"),
-		getEnv("DB_PASSWORD", "asdf"),
+		getEnv("DB_PASSWORD", "password"),
 		getEnv("DB_NAME", "mydb"),
 		getEnv("DB_PORT", "5432"),
 	)
