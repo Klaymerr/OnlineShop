@@ -5,16 +5,42 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
+type Customer struct {
+	ID               uint   `gorm:"primaryKey"`
+	Email            string `gorm:"type:varchar(255);not null;unique"`
+	PasswordHash     string `gorm:"type:varchar(255);not null"`
+	RegistrationDate time.Time
+	Orders           []Order
+}
+
 type Product struct {
-	gorm.Model
-	Name  string  `json:"name"`
-	Price float32 `json:"price"`
+	ID    uint   `gorm:"primaryKey"`
+	Name  string `gorm:"type:varchar(255);not null"`
+	Price float64
+}
+
+type Order struct {
+	ID         uint `gorm:"primaryKey"`
+	CustomerID uint
+	OrderDate  time.Time
+	Status     string      `gorm:"type:varchar(50);not null"`
+	Items      []OrderItem `gorm:"foreignKey:OrderID"`
+}
+
+type OrderItem struct {
+	ID              uint `gorm:"primaryKey"`
+	OrderID         uint
+	ProductID       uint
+	Quantity        int
+	PriceAtPurchase float64
+	Product         Product `gorm:"foreignKey:ProductID"`
 }
 
 var DB *gorm.DB
@@ -35,7 +61,7 @@ func initDB() {
 		log.Fatal("Failed to connect to DB:", err)
 	}
 
-	err = DB.AutoMigrate(&Product{})
+	err = DB.AutoMigrate(&Product{}, &Customer{}, &Order{}, &OrderItem{})
 	if err != nil {
 		log.Fatal("Migration failed:", err)
 	}
