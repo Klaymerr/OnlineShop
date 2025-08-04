@@ -1,0 +1,219 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "API для простого интернет-магазина",
+        "contact": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/products": {
+            "get": {
+                "description": "Возвращает массив всех товаров, доступных в магазине",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Товары (Products)"
+                ],
+                "summary": "Получить список всех товаров",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/database.Product"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Добавляет новый товар в базу данных. ID в теле запроса игнорируется.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Товары (Products)"
+                ],
+                "summary": "Создать новый товар",
+                "parameters": [
+                    {
+                        "description": "Данные для создания нового товара",
+                        "name": "product",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.Product"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/database.Product"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{id}": {
+            "get": {
+                "description": "Получает информацию о конкретном товаре по его ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Товары (Products)"
+                ],
+                "summary": "Получить товар по ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Товара",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Product"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Полностью обновляет информацию о товаре с указанным ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Товары (Products)"
+                ],
+                "summary": "Обновить существующий товар",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Товара для обновления",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Новые данные для товара",
+                        "name": "product",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.Product"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Product"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Удаляет товар из базы данных по его ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Товары (Products)"
+                ],
+                "summary": "Удалить товар",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Товара для удаления",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"message\": \"Product deleted\"}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "database.Product": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number",
+                    "format": "float64"
+                }
+            }
+        },
+        "router.HTTPError": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "Product not found"
+                }
+            }
+        }
+    }
+}

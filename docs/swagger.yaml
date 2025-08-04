@@ -1,0 +1,144 @@
+definitions:
+  database.Product:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      price:
+        format: float64
+        type: number
+    type: object
+  router.HTTPError:
+    properties:
+      error:
+        example: Product not found
+        type: string
+    type: object
+info:
+  contact: {}
+  title: API для простого интернет-магазина
+  version: "1.0"
+paths:
+  /products:
+    get:
+      description: Возвращает массив всех товаров, доступных в магазине
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.Product'
+            type: array
+      summary: Получить список всех товаров
+      tags:
+      - Товары (Products)
+    post:
+      consumes:
+      - application/json
+      description: Добавляет новый товар в базу данных. ID в теле запроса игнорируется.
+      parameters:
+      - description: Данные для создания нового товара
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/database.Product'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/database.Product'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+      summary: Создать новый товар
+      tags:
+      - Товары (Products)
+  /products/{id}:
+    delete:
+      description: Удаляет товар из базы данных по его ID
+      parameters:
+      - description: ID Товара для удаления
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"message": "Product deleted"}'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+      summary: Удалить товар
+      tags:
+      - Товары (Products)
+    get:
+      description: Получает информацию о конкретном товаре по его ID
+      parameters:
+      - description: ID Товара
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Product'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+      summary: Получить товар по ID
+      tags:
+      - Товары (Products)
+    put:
+      consumes:
+      - application/json
+      description: Полностью обновляет информацию о товаре с указанным ID
+      parameters:
+      - description: ID Товара для обновления
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Новые данные для товара
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/database.Product'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Product'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+      summary: Обновить существующий товар
+      tags:
+      - Товары (Products)
+swagger: "2.0"
