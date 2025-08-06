@@ -15,6 +15,22 @@ definitions:
         example: Product not found
         type: string
     type: object
+  router.SuccessMessage:
+    properties:
+      message:
+        example: Product deleted successfully
+        type: string
+    type: object
+  router.UpdateProductInput:
+    properties:
+      name:
+        type: string
+      price:
+        minimum: 0
+        type: number
+    required:
+    - name
+    type: object
 info:
   contact: {}
   title: API для простого интернет-магазина
@@ -73,11 +89,13 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"message": "Product deleted"}'
+          description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/router.SuccessMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/router.HTTPError'
         "500":
           description: Internal Server Error
           schema:
@@ -122,7 +140,7 @@ paths:
         name: product
         required: true
         schema:
-          $ref: '#/definitions/database.Product'
+          $ref: '#/definitions/router.UpdateProductInput'
       produces:
       - application/json
       responses:

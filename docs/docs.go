@@ -136,7 +136,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/database.Product"
+                            "$ref": "#/definitions/router.UpdateProductInput"
                         }
                     }
                 ],
@@ -181,12 +181,15 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"message\": \"Product deleted\"}",
+                        "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/router.SuccessMessage"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
                         }
                     },
                     "500": {
@@ -221,6 +224,30 @@ const docTemplate = `{
                 "error": {
                     "type": "string",
                     "example": "Product not found"
+                }
+            }
+        },
+        "router.SuccessMessage": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Product deleted successfully"
+                }
+            }
+        },
+        "router.UpdateProductInput": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number",
+                    "minimum": 0
                 }
             }
         }

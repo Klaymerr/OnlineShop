@@ -94,14 +94,23 @@ func updateProduct(c *gin.Context) {
 // @Tags         Товары (Products)
 // @Produce      json
 // @Param        id   path      int  true  "ID Товара для удаления"
-// @Success      200  {object}  map[string]string "{"message": "Product deleted"}"
+// @Success      200  {object}  router.SuccessMessage
+// @Failure      404  {object}  router.HTTPError
 // @Failure      500  {object}  router.HTTPError
 // @Router       /products/{id} [delete]
 func deleteProduct(c *gin.Context) {
 	id := c.Param("id")
-	if result := database.DB.Delete(&database.Product{}, id); result.Error != nil {
-		c.JSON(http.StatusInternalServerError, HTTPError{Message: result.Error.Error()})
+
+	var product database.Product
+	if err := database.DB.First(&product, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, HTTPError{Message: "Product not found"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Product deleted"})
+
+	if err := database.DB.Delete(&product).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, HTTPError{Message: "Failed to delete product"})
+		return
+	}
+
+	c.JSON(http.StatusOK, SuccessMessage{Message: "Product deleted successfully"})
 }
