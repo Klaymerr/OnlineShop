@@ -4,6 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var jwtKey = []byte("JWT_KEY")
+
 type HTTPError struct {
 	Message string `json:"error" example:"Product not found"`
 }
@@ -20,13 +22,21 @@ type UpdateProductInput struct {
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
-	productRoutes := r.Group("/products")
+	publicRoutes := r.Group("/")
 	{
-		productRoutes.GET("", getProducts)
-		productRoutes.GET("/:id", getProduct)
-		productRoutes.POST("", createProduct)
-		productRoutes.PUT("/:id", updateProduct)
-		productRoutes.DELETE("/:id", deleteProduct)
+		publicRoutes.GET("products", getProducts)
+		publicRoutes.GET("products/:id", getProduct)
+
+		publicRoutes.POST("users", loginUser)
+	}
+
+	protectedRoutes := r.Group("/")
+	protectedRoutes.Use(AuthMiddleware())
+	{
+		protectedRoutes.GET("users/hello", getProducts)
+		protectedRoutes.POST("products", createProduct)
+		protectedRoutes.PUT("products/:id", updateProduct)
+		protectedRoutes.DELETE("products/:id", deleteProduct)
 	}
 
 	return r
