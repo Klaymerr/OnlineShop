@@ -1,10 +1,11 @@
 package router
 
 import (
+	"OnlineShop/config"
 	"github.com/gin-gonic/gin"
 )
 
-var jwtKey = []byte("JWT_KEY")
+var jwtKey []byte
 
 type HTTPError struct {
 	Message string `json:"error" example:"Product not found"`
@@ -19,7 +20,9 @@ type UpdateProductInput struct {
 	Price float64 `json:"price" binding:"gte=0"`
 }
 
-func SetupRouter() *gin.Engine {
+func SetupRouter(cfg *config.Config) *gin.Engine {
+	jwtKey = cfg.JWTSecretKey
+
 	r := gin.Default()
 
 	publicRoutes := r.Group("/")

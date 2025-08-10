@@ -1,6 +1,7 @@
 package main
 
 import (
+	"OnlineShop/config"
 	"OnlineShop/internal/database"
 	"OnlineShop/internal/router"
 
@@ -13,11 +14,13 @@ import (
 // @version 1.0
 
 func main() {
-	database.InitDB()
+	cfg := config.Load()
 
-	r := router.SetupRouter()
+	database.InitDB(cfg)
+
+	r := router.SetupRouter(cfg)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.Run(":8080")
+	r.Run(":" + cfg.AppPort)
 }

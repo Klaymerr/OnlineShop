@@ -5,11 +5,11 @@ services:
     image: postgres:15-alpine
     container_name: my-postgres-db
     environment:
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
-      POSTGRES_DB: ${DB_NAME:-mydb}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:${DB_PORT}"
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
@@ -17,16 +17,12 @@ services:
     build: .
     container_name: my-go-app
     ports:
-      - "8080:8080"
-    environment:
-      DB_HOST: db
-      DB_USER: ${DB_USER:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-password}
-      DB_NAME: ${DB_NAME:-mydb}
-      DB_PORT: 5432
+      - "${APP_PORT}:${APP_PORT}"
+    env_file:
+      - ./.env
     depends_on:
       - db
-    entrypoint: ["/wait.sh", "db", "/main"]
+    entrypoint: ["/wait.sh", "db", "${DB_PORT}", "/main"]
 
 volumes:
   postgres-data:

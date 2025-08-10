@@ -1,11 +1,11 @@
 package database
 
 import (
+	"OnlineShop/config"
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
-	"os"
 	"time"
 )
 
@@ -40,23 +40,12 @@ type OrderItem struct {
 	Product         Product `gorm:"foreignKey:ProductID"`
 }
 
-func getEnv(key, fallback string) string {
-	if val, exists := os.LookupEnv(key); exists {
-		return val
-	}
-	return fallback
-}
-
 var DB *gorm.DB
 
-func InitDB() {
+func InitDB(cfg *config.Config) {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		getEnv("DB_HOST", "localhost"),
-		getEnv("DB_USER", "postgres"),
-		getEnv("DB_PASSWORD", "password"),
-		getEnv("DB_NAME", "mydb"),
-		getEnv("DB_PORT", "5432"),
+		cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBPort,
 	)
 
 	var err error
