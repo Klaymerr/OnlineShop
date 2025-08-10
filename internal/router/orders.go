@@ -96,3 +96,35 @@ func createOrder(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, finalOrder)
 }
+
+// @Summary      Получить список заказов пользователя
+// @Description  Возвращает все заказы, сделанные аутентифицированным пользователем, с полной информацией о товарах.
+// @Tags         Заказы (Orders)
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}   database.Order "Массив заказов пользователя"
+// @Failure      401  {object}  HTTPError      "Ошибка аутентификации"
+// @Failure      500  {object}  HTTPError      "Внутренняя ошибка сервера"
+// @Router       /orders [get]
+func getOrders(c *gin.Context) {
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, HTTPError{Message: "user ID not found in context"})
+		return
+	}
+
+	var orders []database.Order
+
+	err := database.DB.
+		Preload("Items.Product").
+		Where("customer_id = ?", userID).
+		Order("order_date DESC").
+		Find(&orders).Error
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, HTTPError{Message: "Failed to fetch orders"})
+		return
+	}
+
+	c.JSON(http.StatusOK, orders)
+}

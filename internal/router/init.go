@@ -39,6 +39,7 @@ func SetupRouter(cfg *config.Config) *gin.Engine {
 		protectedRoutes.DELETE("products/:id", deleteProduct)
 
 		protectedRoutes.POST("orders", createOrder)
+		protectedRoutes.GET("orders", getOrders)
 	}
 
 	return r
