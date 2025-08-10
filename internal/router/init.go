@@ -46,6 +46,8 @@ func SetupRouter(cfg *config.Config) *gin.Engine {
 		adminRoutes.POST("products", createProduct)
 		adminRoutes.PUT("products/:id", updateProduct)
 		adminRoutes.DELETE("products/:id", deleteProduct)
+
+		adminRoutes.GET("orders/pending", getPendingOrders)
 	}
 
 	return r

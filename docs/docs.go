@@ -116,6 +116,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/orders/pending": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Возвращает список всех заказов в статусе \"Pending\". Доступно только для администраторов.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Администрирование (Admin)"
+                ],
+                "summary": "Получить список всех незавершенных заказов",
+                "responses": {
+                    "200": {
+                        "description": "Список незавершенных заказов",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/database.Order"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
         "/products": {
             "get": {
                 "description": "Возвращает массив всех товаров, доступных в магазине",
@@ -549,6 +583,9 @@ const docTemplate = `{
         "database.Order": {
             "type": "object",
             "properties": {
+                "customer": {
+                    "$ref": "#/definitions/database.Customer"
+                },
                 "customerID": {
                     "type": "integer"
                 },

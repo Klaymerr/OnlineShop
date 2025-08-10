@@ -32,6 +32,7 @@ type Order struct {
 	OrderDate  time.Time
 	Status     string      `gorm:"type:varchar(50);not null"`
 	Items      []OrderItem `gorm:"foreignKey:OrderID"`
+	Customer   Customer    `gorm:"foreignKey:CustomerID"`
 }
 
 type OrderItem struct {

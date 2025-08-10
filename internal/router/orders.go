@@ -128,3 +128,29 @@ func getOrders(c *gin.Context) {
 
 	c.JSON(http.StatusOK, orders)
 }
+
+// @Summary      Получить список всех незавершенных заказов
+// @Description  Возвращает список всех заказов в статусе "Pending". Доступно только для администраторов.
+// @Tags         Администрирование (Admin)
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}   database.Order "Список незавершенных заказов"
+// @Failure      500  {object}  HTTPError      "Внутренняя ошибка сервера"
+// @Router       /orders/pending [get]
+func getPendingOrders(c *gin.Context) {
+	var orders []database.Order
+
+	err := database.DB.
+		Preload("Items.Product").
+		Preload("Customer").
+		Where("status = ?", "Pending").
+		Order("order_date ASC").
+		Find(&orders).Error
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, HTTPError{Message: "Failed to fetch pending orders"})
+		return
+	}
+
+	c.JSON(http.StatusOK, orders)
+}
