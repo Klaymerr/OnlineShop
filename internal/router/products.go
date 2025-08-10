@@ -42,6 +42,7 @@ func getProduct(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        product  body      database.Product  true  "Данные для создания нового товара"
+// @Security     BearerAuth
 // @Success      201      {object}  database.Product
 // @Failure      400      {object}  router.HTTPError
 // @Router       /products [post]
@@ -62,6 +63,7 @@ func createProduct(c *gin.Context) {
 // @Produce      json
 // @Param        id       path      int                   true  "ID Товара для обновления"
 // @Param        product  body      router.UpdateProductInput  true  "Новые данные для товара"
+// @Security     BearerAuth
 // @Success      200      {object}  database.Product
 // @Failure      400      {object}  router.HTTPError
 // @Failure      404      {object}  router.HTTPError
@@ -94,6 +96,7 @@ func updateProduct(c *gin.Context) {
 // @Tags         Товары (Products)
 // @Produce      json
 // @Param        id   path      int  true  "ID Товара для удаления"
+// @Security     BearerAuth
 // @Success      200  {object}  router.SuccessMessage
 // @Failure      404  {object}  router.HTTPError
 // @Failure      500  {object}  router.HTTPError

@@ -1,4 +1,48 @@
 definitions:
+  database.Customer:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      orders:
+        items:
+          $ref: '#/definitions/database.Order'
+        type: array
+      registrationDate:
+        type: string
+    type: object
+  database.Order:
+    properties:
+      customerID:
+        type: integer
+      id:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/database.OrderItem'
+        type: array
+      orderDate:
+        type: string
+      status:
+        type: string
+    type: object
+  database.OrderItem:
+    properties:
+      id:
+        type: integer
+      orderID:
+        type: integer
+      priceAtPurchase:
+        format: float64
+        type: number
+      product:
+        $ref: '#/definitions/database.Product'
+      productID:
+        type: integer
+      quantity:
+        type: integer
+    type: object
   database.Product:
     properties:
       id:
@@ -14,6 +58,17 @@ definitions:
       error:
         example: Product not found
         type: string
+    type: object
+  router.LoginInput:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
     type: object
   router.SuccessMessage:
     properties:
@@ -73,6 +128,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/router.HTTPError'
+      security:
+      - BearerAuth: []
       summary: Создать новый товар
       tags:
       - Товары (Products)
@@ -100,6 +157,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/router.HTTPError'
+      security:
+      - BearerAuth: []
       summary: Удалить товар
       tags:
       - Товары (Products)
@@ -156,7 +215,100 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/router.HTTPError'
+      security:
+      - BearerAuth: []
       summary: Обновить существующий товар
       tags:
       - Товары (Products)
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Проверяет учетные данные и в случае успеха возвращает JWT токен.
+      parameters:
+      - description: Учетные данные для входа
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/router.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: JWT токен
+          schema:
+            properties:
+              token:
+                type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+      summary: Вход пользователя в систему
+      tags:
+      - Пользователи (Auth)
+  /users/me:
+    get:
+      description: Возвращает данные пользователя, аутентифицированного с помощью
+        JWT токена.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Данные текущего пользователя
+          schema:
+            $ref: '#/definitions/database.Customer'
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+        "404":
+          description: Пользователь из токена не найден в БД
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+      security:
+      - BearerAuth: []
+      summary: Получить информацию о текущем пользователе
+      tags:
+      - Пользователи (Auth)
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Создает новый аккаунт пользователя с email и паролем.
+      parameters:
+      - description: Данные для регистрации
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/router.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Возвращает созданного пользователя
+          schema:
+            $ref: '#/definitions/database.Customer'
+        "400":
+          description: Ошибка валидации входных данных
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+        "409":
+          description: Пользователь с таким email уже существует
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+      summary: Регистрация нового пользователя
+      tags:
+      - Пользователи (Auth)
 swagger: "2.0"

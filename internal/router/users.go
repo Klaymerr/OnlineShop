@@ -60,6 +60,17 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
+// @Summary      Регистрация нового пользователя
+// @Description  Создает новый аккаунт пользователя с email и паролем.
+// @Tags         Пользователи (Auth)
+// @Accept       json
+// @Produce      json
+// @Param        input  body      router.LoginInput  true  "Данные для регистрации"
+// @Success      201    {object}  database.Customer     "Возвращает созданного пользователя"
+// @Failure      400    {object}  router.HTTPError      "Ошибка валидации входных данных"
+// @Failure      409    {object}  router.HTTPError      "Пользователь с таким email уже существует"
+// @Failure      500    {object}  router.HTTPError      "Внутренняя ошибка сервера"
+// @Router       /users/register [post]
 func registerUser(c *gin.Context) {
 	var input LoginInput
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -93,6 +104,16 @@ func registerUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, newUser)
 }
 
+// @Summary      Вход пользователя в систему
+// @Description  Проверяет учетные данные и в случае успеха возвращает JWT токен.
+// @Tags         Пользователи (Auth)
+// @Accept       json
+// @Produce      json
+// @Param        input  body      router.LoginInput     true  "Учетные данные для входа"
+// @Success      200    {object}  object{token=string}  "JWT токен"
+// @Failure      400    {object}  router.HTTPError
+// @Failure      401    {object}  router.HTTPError
+// @Router       /users/login [post]
 func loginUser(c *gin.Context) {
 	var input LoginInput
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -120,6 +141,15 @@ func loginUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
+// @Summary      Получить информацию о текущем пользователе
+// @Description  Возвращает данные пользователя, аутентифицированного с помощью JWT токена.
+// @Tags         Пользователи (Auth)
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {object}  database.Customer  "Данные текущего пользователя"
+// @Failure      401  {object}  router.HTTPError   "Ошибка аутентификации"
+// @Failure      404  {object}  router.HTTPError   "Пользователь из токена не найден в БД"
+// @Router       /users/me [get]
 func SayHello(c *gin.Context) {
 	userID, exists := c.Get("userID")
 	if !exists {
