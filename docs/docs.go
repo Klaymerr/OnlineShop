@@ -16,6 +16,44 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/orders": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Возвращает все заказы, сделанные аутентифицированным пользователем, с полной информацией о товарах.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Заказы (Orders)"
+                ],
+                "summary": "Получить список заказов пользователя",
+                "responses": {
+                    "200": {
+                        "description": "Массив заказов пользователя",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/database.Order"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка аутентификации",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {

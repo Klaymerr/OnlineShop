@@ -112,6 +112,31 @@ info:
   version: "1.0"
 paths:
   /orders:
+    get:
+      description: Возвращает все заказы, сделанные аутентифицированным пользователем,
+        с полной информацией о товарах.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Массив заказов пользователя
+          schema:
+            items:
+              $ref: '#/definitions/database.Order'
+            type: array
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+      security:
+      - BearerAuth: []
+      summary: Получить список заказов пользователя
+      tags:
+      - Заказы (Orders)
     post:
       consumes:
       - application/json
