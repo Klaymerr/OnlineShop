@@ -32,19 +32,19 @@ type Order struct {
 }
 
 type OrderItem struct {
-	ID              uint `gorm:"primaryKey"`
-	OrderID         uint
-	ProductID       uint
-	Quantity        int
-	PriceAtPurchase float64
-	Product         Product `gorm:"foreignKey:ProductID"`
+	ID        uint `gorm:"primaryKey"`
+	OrderID   uint
+	ProductID uint
+	Quantity  int
+	Price     float64
+	Product   Product `gorm:"foreignKey:ProductID"`
 }
 
 var DB *gorm.DB
 
 func InitDB(cfg *config.Config) {
 	dsn := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		"host=%s user=%s password=%s dbname=%s port=%d sslmode=disable",
 		cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBPort,
 	)
 

@@ -6,6 +6,11 @@ import (
 	"net/http"
 )
 
+type UpdateProductInput struct {
+	Name  string  `json:"name" binding:"required"`
+	Price float64 `json:"price" binding:"gte=0"`
+}
+
 // @Summary      Получить список всех товаров
 // @Description  Возвращает массив всех товаров, доступных в магазине
 // @Tags         Товары (Products)

@@ -15,11 +15,6 @@ type SuccessMessage struct {
 	Message string `json:"message" example:"Product deleted successfully"`
 }
 
-type UpdateProductInput struct {
-	Name  string  `json:"name" binding:"required"`
-	Price float64 `json:"price" binding:"gte=0"`
-}
-
 func SetupRouter(cfg *config.Config) *gin.Engine {
 	jwtKey = cfg.JWTSecretKey
 
@@ -42,6 +37,8 @@ func SetupRouter(cfg *config.Config) *gin.Engine {
 		protectedRoutes.POST("products", createProduct)
 		protectedRoutes.PUT("products/:id", updateProduct)
 		protectedRoutes.DELETE("products/:id", deleteProduct)
+
+		protectedRoutes.POST("orders", createOrder)
 	}
 
 	return r

@@ -33,7 +33,7 @@ definitions:
         type: integer
       orderID:
         type: integer
-      priceAtPurchase:
+      price:
         format: float64
         type: number
       product:
@@ -52,6 +52,26 @@ definitions:
       price:
         format: float64
         type: number
+    type: object
+  router.CreateOrderInput:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/router.CreateOrderItemInput'
+        minItems: 1
+        type: array
+    required:
+    - items
+    type: object
+  router.CreateOrderItemInput:
+    properties:
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+    required:
+    - product_id
+    - quantity
     type: object
   router.HTTPError:
     properties:
@@ -91,6 +111,47 @@ info:
   title: API для простого интернет-магазина
   version: "1.0"
 paths:
+  /orders:
+    post:
+      consumes:
+      - application/json
+      description: Создает новый заказ для аутентифицированного пользователя. Требует
+        список ID товаров и их количество.
+      parameters:
+      - description: Данные для создания нового заказа
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/router.CreateOrderInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Возвращает созданный заказ со всеми позициями
+          schema:
+            $ref: '#/definitions/database.Order'
+        "400":
+          description: Ошибка валидации входных данных
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+        "404":
+          description: Один или несколько товаров не найдены
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+      security:
+      - BearerAuth: []
+      summary: Создать новый заказ
+      tags:
+      - Заказы (Orders)
   /products:
     get:
       description: Возвращает массив всех товаров, доступных в магазине

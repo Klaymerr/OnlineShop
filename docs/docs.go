@@ -15,6 +15,69 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/orders": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Создает новый заказ для аутентифицированного пользователя. Требует список ID товаров и их количество.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Заказы (Orders)"
+                ],
+                "summary": "Создать новый заказ",
+                "parameters": [
+                    {
+                        "description": "Данные для создания нового заказа",
+                        "name": "order",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/router.CreateOrderInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Возвращает созданный заказ со всеми позициями",
+                        "schema": {
+                            "$ref": "#/definitions/database.Order"
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка валидации входных данных",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка аутентификации",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Один или несколько товаров не найдены",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
         "/products": {
             "get": {
                 "description": "Возвращает массив всех товаров, доступных в магазине",
@@ -410,7 +473,7 @@ const docTemplate = `{
                 "orderID": {
                     "type": "integer"
                 },
-                "priceAtPurchase": {
+                "price": {
                     "type": "number",
                     "format": "float64"
                 },
@@ -437,6 +500,36 @@ const docTemplate = `{
                 "price": {
                     "type": "number",
                     "format": "float64"
+                }
+            }
+        },
+        "router.CreateOrderInput": {
+            "type": "object",
+            "required": [
+                "items"
+            ],
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/router.CreateOrderItemInput"
+                    }
+                }
+            }
+        },
+        "router.CreateOrderItemInput": {
+            "type": "object",
+            "required": [
+                "product_id",
+                "quantity"
+            ],
+            "properties": {
+                "product_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
                 }
             }
         },
