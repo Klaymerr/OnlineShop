@@ -27,13 +27,15 @@ func SetupRouter() *gin.Engine {
 		publicRoutes.GET("products", getProducts)
 		publicRoutes.GET("products/:id", getProduct)
 
-		publicRoutes.POST("users", loginUser)
+		publicRoutes.POST("users/login", loginUser)
+		publicRoutes.POST("users/register", registerUser)
 	}
 
 	protectedRoutes := r.Group("/")
 	protectedRoutes.Use(AuthMiddleware())
 	{
-		protectedRoutes.GET("users/hello", getProducts)
+		protectedRoutes.GET("users/me", SayHello)
+
 		protectedRoutes.POST("products", createProduct)
 		protectedRoutes.PUT("products/:id", updateProduct)
 		protectedRoutes.DELETE("products/:id", deleteProduct)

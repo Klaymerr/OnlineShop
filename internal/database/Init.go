@@ -12,7 +12,7 @@ import (
 type Customer struct {
 	ID               uint   `gorm:"primaryKey"`
 	Email            string `gorm:"type:varchar(255);not null;unique"`
-	PasswordHash     string `gorm:"type:varchar(255);not null"`
+	PasswordHash     string `gorm:"type:varchar(255);not null" json:"-"`
 	RegistrationDate time.Time
 	Orders           []Order
 }
