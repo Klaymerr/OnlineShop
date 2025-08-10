@@ -456,6 +456,70 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/{id}/promote": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Позволяет администратору назначить другого пользователя администратором.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Администрирование (Admin)"
+                ],
+                "summary": "Повысить пользователя до администратора",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID пользователя, которого нужно повысить",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Сообщение об успешном повышении",
+                        "schema": {
+                            "$ref": "#/definitions/router.SuccessMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Некорректный ID пользователя",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    },
+                    "403": {
+                        "description": "Попытка повысить самого себя",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    },
+                    "409": {
+                        "description": "Пользователь уже является администратором",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {

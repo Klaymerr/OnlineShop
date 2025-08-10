@@ -17,6 +17,9 @@ type Config struct {
 	DBUser     string
 	DBPassword string
 	DBName     string
+
+	InitialAdminEmail    string
+	InitialAdminPassword string
 }
 
 func Load() *Config {
@@ -39,6 +42,9 @@ func Load() *Config {
 		DBPassword: getEnv("DB_PASSWORD", "password"),
 		DBName:     getEnv("DB_NAME", "mydb"),
 		DBPort:     dbPort,
+
+		InitialAdminEmail:    getEnv("INITIAL_ADMIN_EMAIL", "admin@shop.com"),
+		InitialAdminPassword: getEnv("INITIAL_ADMIN_PASSWORD", "adminpassword"),
 	}
 }
 

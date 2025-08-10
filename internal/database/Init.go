@@ -2,7 +2,9 @@ package database
 
 import (
 	"OnlineShop/config"
+	"errors"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -58,5 +60,40 @@ func InitDB(cfg *config.Config) {
 	err = DB.AutoMigrate(&Product{}, &Customer{}, &Order{}, &OrderItem{})
 	if err != nil {
 		log.Fatal("Migration failed:", err)
+	}
+}
+
+func CreateInitialAdmin(db *gorm.DB, cfg *config.Config) {
+	if cfg.InitialAdminEmail == "" || cfg.InitialAdminPassword == "" {
+		log.Println("Initial admin credentials not set, skipping creation.")
+		return
+	}
+
+	var existingAdmin Customer
+	err := db.Where("email = ?", cfg.InitialAdminEmail).First(&existingAdmin).Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		log.Printf("Creating initial admin user: %s", cfg.InitialAdminEmail)
+
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(cfg.InitialAdminPassword), bcrypt.DefaultCost)
+		if err != nil {
+			log.Fatalf("Failed to hash initial admin password: %v", err)
+		}
+
+		admin := Customer{
+			Email:            cfg.InitialAdminEmail,
+			PasswordHash:     string(hashedPassword),
+			RegistrationDate: time.Now(),
+			Role:             "admin",
+		}
+
+		if result := db.Create(&admin); result.Error != nil {
+			log.Fatalf("Failed to create initial admin: %v", result.Error)
+		}
+		log.Println("Initial admin created successfully.")
+	} else if err != nil {
+		log.Fatalf("Failed to query for initial admin: %v", err)
+	} else {
+		log.Println("Initial admin user already exists.")
 	}
 }

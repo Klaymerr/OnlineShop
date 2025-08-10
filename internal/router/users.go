@@ -6,6 +6,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -59,6 +60,25 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		c.Set("userID", claims.UserID)
 		c.Set("role", claims.Role)
+		c.Next()
+	}
+}
+
+func AdminMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userRole, exists := c.Get("role")
+		if !exists {
+			c.JSON(http.StatusForbidden, HTTPError{Message: "Access denied: role not found in token"})
+			c.Abort()
+			return
+		}
+
+		if userRole.(string) != "admin" {
+			c.JSON(http.StatusForbidden, HTTPError{Message: "Access denied: requires admin privileges"})
+			c.Abort()
+			return
+		}
+
 		c.Next()
 	}
 }
@@ -169,4 +189,43 @@ func SayHello(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, user)
+}
+
+// @Summary      Повысить пользователя до администратора
+// @Description  Позволяет администратору назначить другого пользователя администратором.
+// @Tags         Администрирование (Admin)
+// @Produce      json
+// @Param        id   path      int  true  "ID пользователя, которого нужно повысить"
+// @Security     BearerAuth
+// @Success      200  {object}  router.SuccessMessage "Сообщение об успешном повышении"
+// @Failure      400  {object}  HTTPError           "Некорректный ID пользователя"
+// @Failure      403  {object}  HTTPError           "Попытка повысить самого себя"
+// @Failure      404  {object}  HTTPError           "Пользователь не найден"
+// @Failure      409  {object}  HTTPError           "Пользователь уже является администратором"
+// @Failure      500  {object}  HTTPError           "Внутренняя ошибка сервера"
+// @Router       /users/{id}/promote [post]
+func promoteUserToAdmin(c *gin.Context) {
+	targetUserID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, HTTPError{Message: "Invalid user ID"})
+		return
+	}
+
+	var user database.Customer
+	if err := database.DB.First(&user, targetUserID).Error; err != nil {
+		c.JSON(http.StatusNotFound, HTTPError{Message: "User not found"})
+		return
+	}
+
+	if user.Role == "admin" {
+		c.JSON(http.StatusConflict, HTTPError{Message: "User is already an admin"})
+		return
+	}
+
+	if err := database.DB.Model(&user).Update("role", "admin").Error; err != nil {
+		c.JSON(http.StatusInternalServerError, HTTPError{Message: "Failed to promote user"})
+		return
+	}
+
+	c.JSON(http.StatusOK, SuccessMessage{Message: "User successfully promoted to admin"})
 }

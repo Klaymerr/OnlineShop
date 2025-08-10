@@ -34,12 +34,18 @@ func SetupRouter(cfg *config.Config) *gin.Engine {
 	{
 		protectedRoutes.GET("users/me", SayHello)
 
-		protectedRoutes.POST("products", createProduct)
-		protectedRoutes.PUT("products/:id", updateProduct)
-		protectedRoutes.DELETE("products/:id", deleteProduct)
-
 		protectedRoutes.POST("orders", createOrder)
 		protectedRoutes.GET("orders", getOrders)
+	}
+
+	adminRoutes := r.Group("/")
+	adminRoutes.Use(AuthMiddleware(), AdminMiddleware())
+	{
+		adminRoutes.POST("users/:id/promote", promoteUserToAdmin)
+
+		adminRoutes.POST("products", createProduct)
+		adminRoutes.PUT("products/:id", updateProduct)
+		adminRoutes.DELETE("products/:id", deleteProduct)
 	}
 
 	return r

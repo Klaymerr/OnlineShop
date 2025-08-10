@@ -25,6 +25,8 @@ func main() {
 	cfg := config.Load()
 
 	database.InitDB(cfg)
+	
+	database.CreateInitialAdmin(database.DB, cfg)
 
 	r := router.SetupRouter(cfg)
 
