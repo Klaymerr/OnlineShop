@@ -476,6 +476,9 @@ const docTemplate = `{
                 },
                 "registrationDate": {
                     "type": "string"
+                },
+                "role": {
+                    "type": "string"
                 }
             }
         },
@@ -588,7 +591,8 @@ const docTemplate = `{
             ],
             "properties": {
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Test@gmail.com"
                 },
                 "password": {
                     "type": "string",
@@ -620,6 +624,14 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "\"Для доступа к защищенным эндпоинтам введите 'Bearer ' (с пробелом), а затем ваш JWT. Пример: Bearer eyJhbGciOiJI...\"",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
@@ -630,7 +642,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "API для простого интернет-магазина",
-	Description:      "",
+	Description:      "Этот API предоставляет эндпоинты для управления товарами, пользователями и заказами.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

@@ -11,6 +11,8 @@ definitions:
         type: array
       registrationDate:
         type: string
+      role:
+        type: string
     type: object
   database.Order:
     properties:
@@ -82,6 +84,7 @@ definitions:
   router.LoginInput:
     properties:
       email:
+        example: Test@gmail.com
         type: string
       password:
         minLength: 8
@@ -108,6 +111,8 @@ definitions:
     type: object
 info:
   contact: {}
+  description: Этот API предоставляет эндпоинты для управления товарами, пользователями
+    и заказами.
   title: API для простого интернет-магазина
   version: "1.0"
 paths:
@@ -397,4 +402,11 @@ paths:
       summary: Регистрация нового пользователя
       tags:
       - Пользователи (Auth)
+securityDefinitions:
+  BearerAuth:
+    description: '"Для доступа к защищенным эндпоинтам введите ''Bearer '' (с пробелом),
+      а затем ваш JWT. Пример: Bearer eyJhbGciOiJI..."'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

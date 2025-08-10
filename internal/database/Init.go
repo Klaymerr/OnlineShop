@@ -13,6 +13,7 @@ type Customer struct {
 	ID               uint   `gorm:"primaryKey"`
 	Email            string `gorm:"type:varchar(255);not null;unique"`
 	PasswordHash     string `gorm:"type:varchar(255);not null" json:"-"`
+	Role             string `gorm:"type:varchar(50);not null;default:'user'"`
 	RegistrationDate time.Time
 	Orders           []Order
 }

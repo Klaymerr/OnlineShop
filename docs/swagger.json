@@ -1,6 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
+        "description": "Этот API предоставляет эндпоинты для управления товарами, пользователями и заказами.",
         "title": "API для простого интернет-магазина",
         "contact": {},
         "version": "1.0"
@@ -467,6 +468,9 @@
                 },
                 "registrationDate": {
                     "type": "string"
+                },
+                "role": {
+                    "type": "string"
                 }
             }
         },
@@ -579,7 +583,8 @@
             ],
             "properties": {
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Test@gmail.com"
                 },
                 "password": {
                     "type": "string",
@@ -610,6 +615,14 @@
                     "minimum": 0
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "\"Для доступа к защищенным эндпоинтам введите 'Bearer ' (с пробелом), а затем ваш JWT. Пример: Bearer eyJhbGciOiJI...\"",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

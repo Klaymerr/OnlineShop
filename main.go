@@ -13,6 +13,14 @@ import (
 // @title API для простого интернет-магазина
 // @version 1.0
 
+// @description Этот API предоставляет эндпоинты для управления товарами, пользователями и заказами.
+
+// НОВЫЕ СТРОКИ: Описываем схему безопасности Bearer Token (JWT)
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description "Для доступа к защищенным эндпоинтам введите 'Bearer ' (с пробелом), а затем ваш JWT. Пример: Bearer eyJhbGciOiJI..."
+
 func main() {
 	cfg := config.Load()
 
